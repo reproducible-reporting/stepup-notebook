@@ -85,6 +85,28 @@ jobs:
         with:
           enable-cache: true
           cache-dependency-glob: pyproject.toml
+      - name: Install Pandoc
+        # nbconvert converts Markdown cells with Pandoc when exporting to LaTeX,
+        # and none of the runner images had it preinstalled (November 2026).
+        # Chocolatey adds Pandoc to the system PATH, which later steps do not see,
+        # so its directory is added to `GITHUB_PATH` explicitly.
+        timeout-minutes: 5
+        run: |
+          case "${RUNNER_OS}" in
+            Linux)
+              sudo apt-get update
+              sudo apt-get install -y pandoc
+              ;;
+            macOS)
+              brew install pandoc
+              ;;
+            Windows)
+              choco install pandoc --no-progress
+              echo 'C:\Program Files\Pandoc' >> "${GITHUB_PATH}"
+              export PATH="/c/Program Files/Pandoc:${PATH}"
+              ;;
+          esac
+          pandoc --version
       - name: Install with the test dependencies
         # Without precompiled bytecode, the examples that start a Jupyter kernel compile it,
         # which brought `convert_jupyter` close to its deadline on Windows,

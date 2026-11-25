@@ -72,6 +72,15 @@ Install the packages that your notebooks import, such as NumPy or Matplotlib,
 in the same environment.
 Kernels for other languages, e.g. R or Julia, are not supported.
 
+## Pandoc
+
+Converting a notebook to LaTeX or PDF requires [Pandoc](https://pandoc.org/installing.html),
+because nbconvert uses it to translate the Markdown cells.
+Pandoc is not a Python package, so neither pip nor uv installs it.
+Install it with your system package manager, e.g. `apt install pandoc` or `brew install pandoc`,
+or from conda-forge.
+PDF output additionally requires XeLaTeX.
+
 ## Security
 
 StepUp Notebook requires recent versions of the Jupyter packages,
