@@ -144,12 +144,7 @@ jobs:
   publish-to-testpypi:
     name: Publish Python distribution to TestPyPI
     timeout-minutes: 3
-    # A private repository does not publish, not even on TestPyPI,
-    # because an upload makes the package name public.
-    if: >-
-      github.ref == 'refs/heads/main'
-      && github.repository_owner == 'reproducible-reporting'
-      && !github.event.repository.private
+    if: github.ref == 'refs/heads/main' && github.repository_owner == 'reproducible-reporting'
     needs:
     - build
     runs-on: ubuntu-latest

@@ -46,10 +46,6 @@ jobs:
       # A failure on one platform should not hide the results of the other platforms.
       fail-fast: false
       matrix:
-        # As long as the repository is private, only the Ubuntu jobs run,
-        # because GitHub bills the Actions minutes of private repositories,
-        # with a multiplier of 10 for macOS and 2 for Windows on the Free plan.
-        # Uncomment the macOS and Windows jobs when the repository goes public.
         include:
           - runner: ubuntu-24.04
             python-version: '3.11'
@@ -60,22 +56,24 @@ jobs:
           - runner: ubuntu-26.04
             python-version: '3.15'
             resolution: highest
-          # - runner: macos-26
-          #   python-version: '3.11'
-          #   resolution: lowest-direct
-          # - runner: macos-26
-          #   python-version: '3.15'
-          #   resolution: highest
-          # - runner: windows-2022
-          #   python-version: '3.11'
-          #   resolution: lowest-direct
-          # - runner: windows-2025
-          #   python-version: '3.15'
-          #   resolution: highest
+          - runner: macos-26
+            python-version: '3.11'
+            resolution: lowest-direct
+          - runner: macos-26
+            python-version: '3.15'
+            resolution: highest
+          - runner: windows-2022
+            python-version: '3.11'
+            resolution: lowest-direct
+          - runner: windows-2025
+            python-version: '3.15'
+            resolution: highest
     runs-on: ${{ matrix.runner }}
     steps:
       - uses: actions/checkout@v6
         timeout-minutes: 3
+        with:
+          persist-credentials: false
       - name: Set up Python ${{ matrix.python-version }}
         timeout-minutes: 3
         uses: actions/setup-python@v6
