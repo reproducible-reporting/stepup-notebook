@@ -19,6 +19,10 @@ and this project adheres to [Effort-based Versioning](https://jacobtomlinson.dev
 
 ## [Unreleased][]
 
+(no changes yet)
+
+## [4.3.0a0][] - 2026-11-25 {: #v4.3.0a0 }
+
 This is the first release of StepUp Notebook.
 It contains the Jupyter features of StepUp RepRep 4.2, under new names.
 StepUp RepRep 4.2 remains the version for production use until StepUp Notebook 4.3 is released.
@@ -93,3 +97,4 @@ StepUp RepRep 4.2 remains the version for production use until StepUp Notebook 4
   e.g. `convert_jupyter("demo.ipynb", "demo.md")` instead of `to="markdown"`.
 
 [Unreleased]: https://github.com/reproducible-reporting/stepup-notebook
+[4.3.0a0]: https://github.com/reproducible-reporting/stepup-notebook/releases/tag/v4.3.0a0
