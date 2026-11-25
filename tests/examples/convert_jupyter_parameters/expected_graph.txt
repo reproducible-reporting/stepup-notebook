@@ -1,0 +1,64 @@
+root:
+             product   file:plan.py
+             product   step:./plan.py
+
+file:plan.py
+               state = CONFIRMED
+             creator   root:
+                sink   step:./plan.py
+
+step:./plan.py
+               state = SUCCEEDED
+                need = PLAN
+           using_env = STEPUP_PATH_FILTER [dynamic]
+             creator   root:
+              source   file:plan.py
+             product   file:data.json
+             product   file:demo.ipynb
+             product   file:points.txt
+             product   step:sn-convert-jupyter demo.ipynb demo_out.ipynb --to notebook --execute --parameters='{"dpi": 50}'
+
+file:data.json
+               state = CONFIRMED
+             creator   step:./plan.py
+                sink   step:sn-convert-jupyter demo.ipynb demo_out.ipynb --to notebook --execute --parameters='{"dpi": 50}'
+
+file:demo.ipynb
+               state = CONFIRMED
+             creator   step:./plan.py
+                sink   step:sn-convert-jupyter demo.ipynb demo_out.ipynb --to notebook --execute --parameters='{"dpi": 50}'
+
+file:points.txt
+               state = CONFIRMED
+             creator   step:./plan.py
+                sink   step:sn-convert-jupyter demo.ipynb demo_out.ipynb --to notebook --execute --parameters='{"dpi": 50}'
+
+step:sn-convert-jupyter demo.ipynb demo_out.ipynb --to notebook --execute --parameters='{"dpi": 50}'
+               state = SUCCEEDED
+                need = DEFAULT
+           using_env = STEPUP_PATH_FILTER [dynamic]
+             creator   step:./plan.py
+              source   file:data.json [dynamic]
+              source   file:demo.ipynb
+              source   file:points.txt
+             product   file:demo_out.ipynb
+             product   file:plot.png
+             product   file:result.txt
+                sink   file:demo_out.ipynb
+                sink   file:plot.png
+                sink   file:result.txt [dynamic]
+
+file:demo_out.ipynb
+               state = BUILT
+             creator   step:sn-convert-jupyter demo.ipynb demo_out.ipynb --to notebook --execute --parameters='{"dpi": 50}'
+              source   step:sn-convert-jupyter demo.ipynb demo_out.ipynb --to notebook --execute --parameters='{"dpi": 50}'
+
+file:plot.png
+               state = BUILT
+             creator   step:sn-convert-jupyter demo.ipynb demo_out.ipynb --to notebook --execute --parameters='{"dpi": 50}'
+              source   step:sn-convert-jupyter demo.ipynb demo_out.ipynb --to notebook --execute --parameters='{"dpi": 50}'
+
+file:result.txt
+               state = BUILT
+             creator   step:sn-convert-jupyter demo.ipynb demo_out.ipynb --to notebook --execute --parameters='{"dpi": 50}'
+              source   step:sn-convert-jupyter demo.ipynb demo_out.ipynb --to notebook --execute --parameters='{"dpi": 50}'

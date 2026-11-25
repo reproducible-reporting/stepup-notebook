@@ -1,0 +1,18 @@
+ STARTUP │ (Re)initialized boot script
+   PHASE │ build
+   START │ ./plan.py
+ SUCCESS │ ./plan.py
+   START │ sn-convert-jupyter demo.ipynb demo.pdf --to pdf --execute
+ SUCCESS │ sn-convert-jupyter demo.ipynb demo.pdf --to pdf --execute
+DIRECTOR │ Ran 2 job(s).
+DIRECTOR │ Trying to remove 0 deletable file(s) and empty director(y|ies)
+   PHASE │ watch
+DIRECTOR │ Wrote graph to current_graph.txt, current_graph_provenance.dot and current_graph_dependency.dot
+ DELETED │ demo.pdf
+   PHASE │ build
+   START │ sn-convert-jupyter demo.ipynb demo.pdf --to pdf --execute
+ SUCCESS │ sn-convert-jupyter demo.ipynb demo.pdf --to pdf --execute
+DIRECTOR │ Ran 1 job(s).
+DIRECTOR │ Trying to remove 0 deletable file(s) and empty director(y|ies)
+   PHASE │ watch
+DIRECTOR │ See you!

@@ -1,0 +1,71 @@
+root:
+             product   file:plan.py
+             product   step:./plan.py
+
+file:plan.py
+               state = CONFIRMED
+             creator   root:
+                sink   step:./plan.py
+
+step:./plan.py
+               state = SUCCEEDED
+                need = PLAN
+           using_env = STEPUP_PATH_FILTER [dynamic]
+             creator   root:
+              source   file:plan.py
+             product   file:sub/data.txt
+             product   file:sub/demo.ipynb
+             product   file:sub/helper.py
+             product   step:sn-convert-jupyter sub/demo.ipynb sub/demo.md --to markdown --execute --step-info=current_step_info.json
+
+file:sub/data.txt
+               state = CONFIRMED
+             creator   step:./plan.py
+                sink   step:sn-convert-jupyter sub/demo.ipynb sub/demo.md --to markdown --execute --step-info=current_step_info.json
+
+file:sub/demo.ipynb
+               state = CONFIRMED
+             creator   step:./plan.py
+                sink   step:sn-convert-jupyter sub/demo.ipynb sub/demo.md --to markdown --execute --step-info=current_step_info.json
+
+file:sub/helper.py
+               state = CONFIRMED
+             creator   step:./plan.py
+                sink   step:sn-convert-jupyter sub/demo.ipynb sub/demo.md --to markdown --execute --step-info=current_step_info.json
+
+step:sn-convert-jupyter sub/demo.ipynb sub/demo.md --to markdown --execute --step-info=current_step_info.json
+               state = SUCCEEDED
+                need = DEFAULT
+           using_env = STEPUP_PATH_FILTER [dynamic]
+             creator   step:./plan.py
+              source   file:sub/data.txt [dynamic]
+              source   file:sub/demo.ipynb
+              source   file:sub/helper.py [dynamic]
+             product   file:current_step_info.json
+             product   file:sub/demo.md
+             product   file:sub/demo_md_files/output_2_0.png
+             product   file:sub/result.txt
+                sink   file:current_step_info.json
+                sink   file:sub/demo.md
+                sink   file:sub/demo_md_files/output_2_0.png [dynamic]
+                sink   file:sub/result.txt [dynamic]
+
+file:current_step_info.json
+               state = BUILT
+             creator   step:sn-convert-jupyter sub/demo.ipynb sub/demo.md --to markdown --execute --step-info=current_step_info.json
+              source   step:sn-convert-jupyter sub/demo.ipynb sub/demo.md --to markdown --execute --step-info=current_step_info.json
+
+file:sub/demo.md
+               state = BUILT
+             creator   step:sn-convert-jupyter sub/demo.ipynb sub/demo.md --to markdown --execute --step-info=current_step_info.json
+              source   step:sn-convert-jupyter sub/demo.ipynb sub/demo.md --to markdown --execute --step-info=current_step_info.json
+
+file:sub/result.txt
+               state = BUILT
+             creator   step:sn-convert-jupyter sub/demo.ipynb sub/demo.md --to markdown --execute --step-info=current_step_info.json
+              source   step:sn-convert-jupyter sub/demo.ipynb sub/demo.md --to markdown --execute --step-info=current_step_info.json
+
+file:sub/demo_md_files/output_2_0.png
+               state = BUILT
+             creator   step:sn-convert-jupyter sub/demo.ipynb sub/demo.md --to markdown --execute --step-info=current_step_info.json
+              source   step:sn-convert-jupyter sub/demo.ipynb sub/demo.md --to markdown --execute --step-info=current_step_info.json

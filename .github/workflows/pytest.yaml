@@ -1,0 +1,115 @@
+# SPDX-FileCopyrightText: 2024 Toon Verstraelen <Toon.Verstraelen@UGent.be>
+# SPDX-License-Identifier: LGPL-3.0-or-later
+name: pytest
+on:
+  push:
+    branches:
+      # Run tests for change on the main branch ...
+      - main
+    tags-ignore:
+      # ... but not for tags (avoids duplicate work) ...
+      - '**'
+    paths:
+      # ... and only if relevant files have changed.
+      - stepup/**
+      - tests/**
+      - pyproject.toml
+      - .gitattributes
+      - .github/workflows/pytest.yaml
+  pull_request:
+    # Run tests on pull requests ...
+    paths:
+      # ... only if relevant files have changed.
+      - stepup/**
+      - tests/**
+      - pyproject.toml
+      - .gitattributes
+      - .github/workflows/pytest.yaml
+
+# The steps are written for bash, which is the bash of Git for Windows on the Windows runners.
+defaults:
+  run:
+    shell: bash
+
+jobs:
+  tests:
+    permissions:
+      contents: read
+    env:
+      # Enforce strict checks instead of trying to repair fixable issues.
+      STEPUP_DEBUG: 1
+      # Duration measurements are disabled to make tests deterministic.
+      STEPUP_BUILD_DURATION: 0
+      # RPC timeout is set shorter to speed up tests in case of failures.
+      STEPUP_SYNC_RPC_TIMEOUT: 10
+    strategy:
+      # A failure on one platform should not hide the results of the other platforms.
+      fail-fast: false
+      matrix:
+        # As long as the repository is private, only the Ubuntu jobs run,
+        # because GitHub bills the Actions minutes of private repositories,
+        # with a multiplier of 10 for macOS and 2 for Windows on the Free plan.
+        # Uncomment the macOS and Windows jobs when the repository goes public.
+        include:
+          - runner: ubuntu-24.04
+            python-version: '3.11'
+            resolution: lowest-direct
+          - runner: ubuntu-26.04
+            python-version: '3.14'
+            resolution: highest
+          - runner: ubuntu-26.04
+            python-version: '3.15'
+            resolution: highest
+          # - runner: macos-26
+          #   python-version: '3.11'
+          #   resolution: lowest-direct
+          # - runner: macos-26
+          #   python-version: '3.15'
+          #   resolution: highest
+          # - runner: windows-2022
+          #   python-version: '3.11'
+          #   resolution: lowest-direct
+          # - runner: windows-2025
+          #   python-version: '3.15'
+          #   resolution: highest
+    runs-on: ${{ matrix.runner }}
+    steps:
+      - uses: actions/checkout@v6
+        timeout-minutes: 3
+      - name: Set up Python ${{ matrix.python-version }}
+        timeout-minutes: 3
+        uses: actions/setup-python@v6
+        with:
+          python-version: ${{ matrix.python-version }}
+      - name: Set up uv
+        timeout-minutes: 3
+        uses: astral-sh/setup-uv@v10.0.1
+        with:
+          enable-cache: true
+          cache-dependency-glob: pyproject.toml
+      - name: Install with the test dependencies
+        # Without precompiled bytecode, the examples that start a Jupyter kernel compile it,
+        # which brought `convert_jupyter` close to its deadline on Windows,
+        # as observed in a Windows 11 VM with Python 3.14.
+        timeout-minutes: 3
+        env:
+          # As of November 2026, PyYAML has no wheels for Python 3.15,
+          # so it is built from source without its C extension, which StepUp does not use.
+          # With the extension enabled, the build failed on Windows without a C compiler
+          # instead of falling back to pure Python (PyYAML 6.0.3, setuptools 84.2.1),
+          # as observed in the CI of StepUp Core.
+          PYYAML_FORCE_LIBYAML: '0'
+        run: >-
+          uv pip install --system --compile-bytecode
+          --resolution ${{ matrix.resolution }} -e .[tests]
+      - name: Warm up the Matplotlib font cache
+        # Matplotlib builds its font cache on first import.
+        # With Matplotlib 3.11.2 on the macos-26 runner, this took 20 seconds,
+        # which made the first notebook examples importing it exceed their deadline
+        # (November 2026).
+        # The `time` output shows whether this cost is still paid here.
+        timeout-minutes: 3
+        run: time python -c 'import matplotlib.pyplot'
+      - name: Run pytest
+        timeout-minutes: 15
+        run: pytest -vv

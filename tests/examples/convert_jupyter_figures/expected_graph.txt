@@ -1,0 +1,89 @@
+root:
+             product   file:plan.py
+             product   step:./plan.py
+
+file:plan.py
+               state = CONFIRMED
+             creator   root:
+                sink   step:./plan.py
+
+step:./plan.py
+               state = SUCCEEDED
+                need = PLAN
+           using_env = STEPUP_PATH_FILTER [dynamic]
+             creator   root:
+              source   file:plan.py
+             product   file:count.txt
+             product   file:demo.ipynb
+             product   step:sn-convert-jupyter demo.ipynb demo.md --to markdown --execute
+             product   step:sn-convert-jupyter demo.ipynb demo.tex --to latex --execute
+
+file:count.txt
+               state = CONFIRMED
+             creator   step:./plan.py
+                sink   step:sn-convert-jupyter demo.ipynb demo.md --to markdown --execute
+                sink   step:sn-convert-jupyter demo.ipynb demo.tex --to latex --execute
+
+file:demo.ipynb
+               state = CONFIRMED
+             creator   step:./plan.py
+                sink   step:sn-convert-jupyter demo.ipynb demo.md --to markdown --execute
+                sink   step:sn-convert-jupyter demo.ipynb demo.tex --to latex --execute
+
+step:sn-convert-jupyter demo.ipynb demo.md --to markdown --execute
+               state = SUCCEEDED
+                need = DEFAULT
+           using_env = STEPUP_PATH_FILTER [dynamic]
+             creator   step:./plan.py
+              source   file:count.txt
+              source   file:demo.ipynb
+             product   file:demo.md
+             product   file:demo_md_files/output_2_0.png
+             product   file:demo_md_files/output_2_1.png
+                sink   file:demo.md
+                sink   file:demo_md_files/output_2_0.png [dynamic]
+                sink   file:demo_md_files/output_2_1.png [dynamic]
+
+file:demo.md
+               state = BUILT
+             creator   step:sn-convert-jupyter demo.ipynb demo.md --to markdown --execute
+              source   step:sn-convert-jupyter demo.ipynb demo.md --to markdown --execute
+
+step:sn-convert-jupyter demo.ipynb demo.tex --to latex --execute
+               state = SUCCEEDED
+                need = DEFAULT
+           using_env = STEPUP_PATH_FILTER [dynamic]
+             creator   step:./plan.py
+              source   file:count.txt
+              source   file:demo.ipynb
+             product   file:demo.tex
+             product   file:demo_tex_files/output_2_0.png
+             product   file:demo_tex_files/output_2_1.png
+                sink   file:demo.tex
+                sink   file:demo_tex_files/output_2_0.png [dynamic]
+                sink   file:demo_tex_files/output_2_1.png [dynamic]
+
+file:demo.tex
+               state = BUILT
+             creator   step:sn-convert-jupyter demo.ipynb demo.tex --to latex --execute
+              source   step:sn-convert-jupyter demo.ipynb demo.tex --to latex --execute
+
+file:demo_md_files/output_2_0.png
+               state = BUILT
+             creator   step:sn-convert-jupyter demo.ipynb demo.md --to markdown --execute
+              source   step:sn-convert-jupyter demo.ipynb demo.md --to markdown --execute
+
+file:demo_md_files/output_2_1.png
+               state = BUILT
+             creator   step:sn-convert-jupyter demo.ipynb demo.md --to markdown --execute
+              source   step:sn-convert-jupyter demo.ipynb demo.md --to markdown --execute
+
+file:demo_tex_files/output_2_0.png
+               state = BUILT
+             creator   step:sn-convert-jupyter demo.ipynb demo.tex --to latex --execute
+              source   step:sn-convert-jupyter demo.ipynb demo.tex --to latex --execute
+
+file:demo_tex_files/output_2_1.png
+               state = BUILT
+             creator   step:sn-convert-jupyter demo.ipynb demo.tex --to latex --execute
+              source   step:sn-convert-jupyter demo.ipynb demo.tex --to latex --execute

@@ -1,0 +1,35 @@
+root:
+             product   file:plan.py
+             product   step:./plan.py
+
+file:plan.py
+               state = CONFIRMED
+             creator   root:
+                sink   step:./plan.py
+
+step:./plan.py
+               state = SUCCEEDED
+                need = PLAN
+           using_env = STEPUP_PATH_FILTER [dynamic]
+             creator   root:
+              source   file:plan.py
+             product   file:fail.ipynb
+             product   step:sn-convert-jupyter fail.ipynb fail.html --to html --execute
+
+file:fail.ipynb
+               state = CONFIRMED
+             creator   step:./plan.py
+                sink   step:sn-convert-jupyter fail.ipynb fail.html --to html --execute
+
+step:sn-convert-jupyter fail.ipynb fail.html --to html --execute
+               state = FAILED
+                need = DEFAULT
+             creator   step:./plan.py
+              source   file:fail.ipynb
+             product   file:fail.html
+                sink   file:fail.html
+
+file:fail.html
+               state = OUTDATED
+             creator   step:sn-convert-jupyter fail.ipynb fail.html --to html --execute
+              source   step:sn-convert-jupyter fail.ipynb fail.html --to html --execute

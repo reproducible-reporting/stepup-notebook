@@ -1,0 +1,18 @@
+{
+  "command": "sn-convert-jupyter sub/demo.ipynb sub/demo.md --to markdown --execute --step-info=current_step_info.json",
+  "inp": [
+    "sub/data.txt",
+    "sub/demo.ipynb",
+    "sub/helper.py"
+  ],
+  "env": [
+    "STEPUP_PATH_FILTER"
+  ],
+  "out": [
+    "sub/demo.md",
+    "sub/demo_md_files/output_2_0.png",
+    "sub/result.txt"
+  ],
+  "vol": [],
+  "workdir": "."
+}

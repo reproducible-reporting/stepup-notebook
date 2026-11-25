@@ -1,0 +1,24 @@
+ STARTUP │ (Re)initialized boot script
+   PHASE │ build
+   START │ ./plan.py
+ SUCCESS │ ./plan.py
+   START │ sn-convert-jupyter demo.ipynb demo.md --to markdown --execute
+ SUCCESS │ sn-convert-jupyter demo.ipynb demo.md --to markdown --execute
+   START │ sn-convert-jupyter demo.ipynb demo.tex --to latex --execute
+ SUCCESS │ sn-convert-jupyter demo.ipynb demo.tex --to latex --execute
+DIRECTOR │ Ran 3 job(s).
+DIRECTOR │ Trying to remove 0 deletable file(s) and empty director(y|ies)
+   PHASE │ watch
+DIRECTOR │ Wrote graph to current_graph.txt, current_graph_provenance.dot and current_graph_dependency.dot
+ UPDATED │ count.txt
+   PHASE │ build
+   START │ sn-convert-jupyter demo.ipynb demo.md --to markdown --execute
+ SUCCESS │ sn-convert-jupyter demo.ipynb demo.md --to markdown --execute
+   START │ sn-convert-jupyter demo.ipynb demo.tex --to latex --execute
+ SUCCESS │ sn-convert-jupyter demo.ipynb demo.tex --to latex --execute
+DIRECTOR │ Ran 2 job(s).
+DIRECTOR │ Trying to remove 2 deletable file(s) and empty director(y|ies)
+  REMOVE │ demo_tex_files/output_2_1.png
+  REMOVE │ demo_md_files/output_2_1.png
+   PHASE │ watch
+DIRECTOR │ See you!
