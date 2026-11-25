@@ -52,7 +52,7 @@ repos:
   rev: "v6.0.0"
   hooks:
     - id: nb-clean
-      args: ["--remove-empty-cells", "--preserve-cell-metadata", "tags", "--"]
+      args: ["--remove-empty-cells", "--preserve-cell-metadata-field", "tags"]
 - repo: https://github.com/fsfe/reuse-tool
   rev: v6.3.0
   hooks:
